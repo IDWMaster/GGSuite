@@ -1,3 +1,17 @@
 Name the folder globalgrid-0.1.0
 Run dh_make --createorig
 
+
+
+The "rules" file should resemble the following
+#!/usr/bin/make -f
+# -*- makefile -*-
+
+# Uncomment this to turn on verbose mode.
+#export DH_VERBOSE=1
+
+%:
+        dh $@ ./configure
+
+
+
