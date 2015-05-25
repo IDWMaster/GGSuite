@@ -1,5 +1,5 @@
 Name the folder globalgrid-0.1.0
-Run dh_make --createorig
+Run dh_make --createorig -e your@email.com
 
 
 
