@@ -114,7 +114,7 @@
 			<locationURI>virtual:/virtual</locationURI>
 		</link>
 		<link>
-			<name>[Subprojects]/OAuth</name>
+			<name>[Subprojects]/GlobalGrid</name>
 			<type>2</type>
 			<location>/home/brian/GGSuite/src</location>
 		</link>
@@ -124,62 +124,67 @@
 			<locationURI>virtual:/virtual</locationURI>
 		</link>
 		<link>
-			<name>[Targets]/[lib] OAuth</name>
+			<name>[Targets]/[lib] GlobalGrid</name>
 			<type>2</type>
 			<locationURI>virtual:/virtual</locationURI>
 		</link>
 		<link>
-			<name>[Targets]/[lib] OAuth/</name>
+			<name>[Targets]/[lib] GlobalGrid/</name>
 			<type>2</type>
 			<locationURI>virtual:/virtual</locationURI>
 		</link>
 		<link>
-			<name>[Targets]/[lib] OAuth/Source Files</name>
+			<name>[Targets]/[lib] GlobalGrid/Source Files</name>
 			<type>2</type>
 			<locationURI>virtual:/virtual</locationURI>
 		</link>
 		<link>
-			<name>[Targets]/[lib] OAuth/Source Files/sqlite3.c</name>
+			<name>[Targets]/[lib] GlobalGrid/Source Files/sqlite3.c</name>
 			<type>1</type>
 			<location>/home/brian/GGSuite/src/sqlite3.c</location>
 		</link>
 		<link>
-			<name>[Targets]/[lib] OAuth/Source Files/Platform.cpp</name>
+			<name>[Targets]/[lib] GlobalGrid/Source Files/Natives.cpp</name>
+			<type>1</type>
+			<location>/home/brian/GGSuite/src/Natives.cpp</location>
+		</link>
+		<link>
+			<name>[Targets]/[lib] GlobalGrid/Source Files/Platform.cpp</name>
 			<type>1</type>
 			<location>/home/brian/GGSuite/src/Platform.cpp</location>
 		</link>
 		<link>
-			<name>[Targets]/[lib] OAuth/Source Files/OpenNet.cpp</name>
+			<name>[Targets]/[lib] GlobalGrid/Source Files/OpenNet.cpp</name>
 			<type>1</type>
 			<location>/home/brian/GGSuite/src/OpenNet.cpp</location>
 		</link>
 		<link>
-			<name>[Targets]/[lib] OAuth/Source Files/GGDNS.cpp</name>
+			<name>[Targets]/[lib] GlobalGrid/Source Files/GGDNS.cpp</name>
 			<type>1</type>
 			<location>/home/brian/GGSuite/src/GGDNS.cpp</location>
 		</link>
 		<link>
-			<name>[Targets]/[lib] OAuth/Source Files/GlobalGrid.cpp</name>
+			<name>[Targets]/[lib] GlobalGrid/Source Files/GlobalGrid.cpp</name>
 			<type>1</type>
 			<location>/home/brian/GGSuite/src/GlobalGrid.cpp</location>
 		</link>
 		<link>
-			<name>[Targets]/[lib] OAuth/Header Files</name>
+			<name>[Targets]/[lib] GlobalGrid/Header Files</name>
 			<type>2</type>
 			<locationURI>virtual:/virtual</locationURI>
 		</link>
 		<link>
-			<name>[Targets]/[lib] OAuth/CMake Rules</name>
+			<name>[Targets]/[lib] GlobalGrid/CMake Rules</name>
 			<type>2</type>
 			<locationURI>virtual:/virtual</locationURI>
 		</link>
 		<link>
-			<name>[Targets]/[lib] OAuth/Resources</name>
+			<name>[Targets]/[lib] GlobalGrid/Resources</name>
 			<type>2</type>
 			<locationURI>virtual:/virtual</locationURI>
 		</link>
 		<link>
-			<name>[Targets]/[lib] OAuth/Object Files</name>
+			<name>[Targets]/[lib] GlobalGrid/Object Files</name>
 			<type>2</type>
 			<locationURI>virtual:/virtual</locationURI>
 		</link>

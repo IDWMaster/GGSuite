@@ -326,7 +326,12 @@ static bool sendCertRequest(unsigned char* dest, const char* thumbprint) {
 
 class AES_Key {
 public:
-	unsigned char key[16];
+	unsigned char key[32];
+	AES_Key(const unsigned char* key) {
+	  memcpy(this->key,key,32);
+	}
+	AES_Key() {
+	}
 };
 
 static std::map<Guid,AES_Key> keys;
@@ -698,7 +703,8 @@ size_t gsize = 0;
 	if(wh->data) {
 		//WE HAVE GUID!!!!!
 		memcpy(dest.val,wh->data,16);
-		MapInsert(dest,key,keys);
+		AES_Key rkey(key);
+		MapInsert(dest,rkey,keys);
 	}
 	return dest;
 
