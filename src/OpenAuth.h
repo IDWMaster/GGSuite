@@ -193,6 +193,7 @@ void GGDNS_MakeDomain(const char* name, const char* parent,  const char* authori
 //be composed of individual 16-byte entries.
 void GGDNS_MakeHost(const char* ptr, unsigned char* guidlist, size_t len);
 void* GGDNS_db();
+bool GGDNS_ResolveHost(const char* authority, const char* name, char* output, unsigned char* key);
 #ifdef __cplusplus
 }
 #endif

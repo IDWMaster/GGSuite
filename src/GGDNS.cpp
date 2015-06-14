@@ -329,7 +329,7 @@ public:
 	unsigned char key[16];
 };
 
-static std::map<std::string,AES_Key> keys;
+static std::map<Guid,AES_Key> keys;
 
 static void processRequest(void* thisptr_, unsigned char* src_, int32_t srcPort, unsigned char* data_, size_t sz) {
     //Received a DNS request; process it
@@ -568,7 +568,7 @@ static void processRequest(void* thisptr_, unsigned char* src_, int32_t srcPort,
 		        					callbacks_mtx.lock();
 		        					AES_Key key;
 		        					memcpy(key.key,substream.ptr,32);
-		        					keys[thumbprint] = key;
+		        					keys[src] = key;
 		        					callbacks_mtx.unlock();
 
 		        					//TODO: Send response
@@ -698,7 +698,7 @@ size_t gsize = 0;
 	if(wh->data) {
 		//WE HAVE GUID!!!!!
 		memcpy(dest.val,wh->data,16);
-
+		MapInsert(dest,key,keys);
 	}
 	return dest;
 
@@ -1130,4 +1130,22 @@ void GGDNS_RunQuery(const char* name,void* thisptr, void(*callback)(void*,NamedO
         callback(thisptr,obj);
     });
 }
+
+
+
+bool GGDNS_ResolveHost(const char* authority, const char* name, char* output, unsigned char* key) {
+  Guid resolution = ResolveDotName(name,authority);
+  memcpy(output,resolution.val,16);
+  bool found = false;
+  callbacks_mtx.lock();
+  if(keys.find(resolution) != keys.end()) {
+    found = true;
+    memcpy(key,keys[resolution].key,32);
+  }
+  callbacks_mtx.unlock();
+  return found;
+}
+
+
+
 }
