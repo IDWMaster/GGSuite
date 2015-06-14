@@ -1,0 +1,4 @@
+cp GlobalGrid.h /usr/include/
+cp InternetProtocol.h /usr/include/
+cp OpenAuth.h /usr/include/
+cp libGlobalGrid.so /usr/lib/
