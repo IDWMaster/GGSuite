@@ -1139,7 +1139,7 @@ void GGDNS_RunQuery(const char* name,void* thisptr, void(*callback)(void*,NamedO
 
 
 
-bool GGDNS_ResolveHost(const char* authority, const char* name, char* output, unsigned char* key) {
+bool GGDNS_ResolveHost(const char* authority, const char* name, unsigned char* output, unsigned char* key) {
   Guid resolution = ResolveDotName(name,authority);
   memcpy(output,resolution.val,16);
   bool found = false;

@@ -61,6 +61,8 @@ static void* C(const F& callback, R(*&fptr)(void*, args...)) {
 extern "C" {
 #endif
     void* OpenNet_OAuthInitialize();
+    void AES_Encrypt(unsigned char* key, unsigned char* data);
+    void AES_Decrypt(unsigned char* key, unsigned char* data);
     void OpenNet_Retrieve(void* db, const char* name, void* thisptr, void(*callback)(void* thisptr,NamedObject* obj));
     bool OpenNet_AddObject(void* db, const char* name, const NamedObject* obj);
     void OpenNet_OAuthDestroy(void* db);
@@ -193,7 +195,7 @@ void GGDNS_MakeDomain(const char* name, const char* parent,  const char* authori
 //be composed of individual 16-byte entries.
 void GGDNS_MakeHost(const char* ptr, unsigned char* guidlist, size_t len);
 void* GGDNS_db();
-bool GGDNS_ResolveHost(const char* authority, const char* name, char* output, unsigned char* key);
+bool GGDNS_ResolveHost(const char* authority, const char* name, unsigned char* output, unsigned char* key);
 #ifdef __cplusplus
 }
 #endif

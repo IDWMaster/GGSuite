@@ -214,6 +214,17 @@ size_t RSA_decrypt(unsigned char* key, size_t keylen, unsigned char* data, size_
 
 }
 
+void AES_Encrypt(unsigned char* key, unsigned char* data) {
+  AES_KEY _key;
+  AES_set_encrypt_key(key,256,&_key);
+  AES_encrypt(data,data,&_key);
+}
+void AES_Decrypt(unsigned char* key, unsigned char* data) {
+  AES_KEY _key;
+  AES_set_decrypt_key(key,256,&_key);
+  AES_decrypt(data,data,&_key);
+}
+
 
 bool VerifySignature(unsigned char* data, size_t dlen, unsigned char* signature, size_t slen, unsigned char* key) {
     RSA* msa = RSA_new();
