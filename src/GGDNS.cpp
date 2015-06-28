@@ -1136,7 +1136,15 @@ void GGDNS_RunQuery(const char* name,void* thisptr, void(*callback)(void*,NamedO
         callback(thisptr,obj);
     });
 }
-
+bool GGDNS_Symkey(const unsigned char* guid, unsigned char* output) {
+  callbacks_mtx.lock();
+  bool found = keys.find(guid) != keys.end();
+  if(found) {
+    memcpy(output,keys[guid].key,32);
+  }
+  callbacks_mtx.unlock();
+  return found;
+}
 
 
 bool GGDNS_ResolveHost(const char* authority, const char* name, unsigned char* output, unsigned char* key) {
