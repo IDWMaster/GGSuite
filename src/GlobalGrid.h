@@ -105,7 +105,7 @@ extern "C" {
 #ifdef __cplusplus
 }
 
-
+using namespace LightThread;
 
 
 //C++-ABI
