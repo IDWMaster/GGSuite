@@ -218,6 +218,7 @@ public:
 	unsigned char id[16];
 	std::map<Guid, ProtocolDriver> protocolDrivers;
 	std::map<Guid, std::shared_ptr<IntelligentRoute>> cachedRoutes;
+	std::set<Guid> frozenRoutes;
 	std::recursive_mutex mtx;
 	std::shared_ptr<IntelligentRoute> flood;
 	unsigned char local[16];
@@ -226,6 +227,11 @@ public:
 	std::thread gcthread;
 	size_t currentPort;
 	std::queue<size_t> availablePorts;
+	void FreezeRoute(Guid g) {
+	  mtx.lock();
+	  frozenRoutes.insert(g);
+	  mtx.unlock();
+	}
 	P2PConnectionManager() {
 		currentPort = 1000;
 		running = true;
@@ -332,11 +338,13 @@ public:
 
 	void addRoute(Guid destination, Guid router, std::shared_ptr<IntelligentRoute> route) {
 		mtx.lock();
+		if(frozenRoutes.find(destination) == frozenRoutes.end()) {
 		if (cachedRoutes[destination] != route) {
 			cachedRoutes[destination] = route;
 		}
 
 		memcpy(cachedRoutes[destination]->router, router.value, 16);
+		}
 		mtx.unlock();
 		
 	}  
@@ -612,7 +620,12 @@ void GlobalGrid_Send(void* connectionManager, unsigned char* dest, int32_t destp
 	SafeBuffer buffer(data,sz);
 	mngr->Send(dest, destportno,srcportno, buffer);
 }
-
+void GlobalGrid_FreezeSocket(void* connectionManager,unsigned char* guid) {
+  auto mngr = ((P2PConnectionManager*)connectionManager);
+  mngr->mtx.lock();
+  mngr->FreezeRoute(Guid(guid));
+  mngr->mtx.unlock();
+}
 
 size_t GlobalGrid_GetPeerList(void* connectionManager, GlobalGrid_Identifier** list) {
 	P2PConnectionManager* manager = (P2PConnectionManager*)connectionManager;
