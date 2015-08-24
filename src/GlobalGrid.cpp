@@ -581,6 +581,9 @@ public:
 		}
 	}
 };
+
+
+extern "C" {
 void* createP2PConnectionManager() {
 	
 	return new P2PConnectionManager();
@@ -620,10 +623,34 @@ void GlobalGrid_Send(void* connectionManager, unsigned char* dest, int32_t destp
 	SafeBuffer buffer(data,sz);
 	mngr->Send(dest, destportno,srcportno, buffer);
 }
+
+
+void* Route_Capture(void* connectionManager,unsigned char* guid) {
+  auto mngr = ((P2PConnectionManager*)connectionManager);
+  return new std::shared_ptr<IntelligentRoute>(mngr->findRoute(guid));
+  
+}
+void Route_Uncapture(void* route) {
+  delete (std::shared_ptr<IntelligentRoute>*)route;
+}
+void Route_Assign(void* connectionManager,unsigned char* guid, void* route) {
+  auto mngr = ((P2PConnectionManager*)connectionManager);
+  mngr->mtx.lock();
+  mngr->cachedRoutes[guid] = *((std::shared_ptr<IntelligentRoute>*)route);
+  mngr->mtx.unlock();
+}
 void GlobalGrid_FreezeSocket(void* connectionManager,unsigned char* guid) {
   auto mngr = ((P2PConnectionManager*)connectionManager);
   mngr->mtx.lock();
   mngr->FreezeRoute(Guid(guid));
+  mngr->mtx.unlock();
+}
+void GlobalGrid_UnfreezeSocket(void* connectionManager, unsigned char* guid) {
+  auto mngr = ((P2PConnectionManager*)connectionManager);
+  mngr->mtx.lock();
+  if(mngr->frozenRoutes.find(Guid(guid)) != mngr->frozenRoutes.end()) {
+    mngr->frozenRoutes.erase(mngr->frozenRoutes.find(Guid(guid)));
+  }
   mngr->mtx.unlock();
 }
 
@@ -652,4 +679,5 @@ void GlobalGrid_FreePeerList(GlobalGrid_Identifier* list) {
 	if (list != 0) {
 		delete[] list;
 	}
+}
 }

@@ -101,6 +101,13 @@ extern "C" {
     size_t GlobalGrid_GetPeerList(void* connectionManager,GlobalGrid_Identifier** list);
     void GlobalGrid_FreePeerList(GlobalGrid_Identifier* list);
     ByteArray OS_ResolveByteArray(void* byteArray);
+   
+    
+void* Route_Capture(void* connectionManager,unsigned char* guid);
+void Route_Uncapture(void* route);
+void Route_Assign(void* connectionManager,unsigned char* guid, void* route);
+void GlobalGrid_FreezeSocket(void* connectionManager,unsigned char* guid);
+void GlobalGrid_UnfreezeSocket(void* connectionManager, unsigned char* guid);
 
 #ifdef __cplusplus
 }
