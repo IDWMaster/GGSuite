@@ -228,7 +228,7 @@ public:
 };
 
 
-//RELIABILITY LAYER
+//BEGIN RELIABILITY LAYER
 
 class GGManager_Forward {
 public:
