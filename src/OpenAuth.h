@@ -203,7 +203,8 @@ bool GGDNS_ResolveHost(const char* authority, const char* name, unsigned char* o
 
 #ifdef __cplusplus
 //TODO: C++ helpers
-static std::string DotQuery(const char* query) {
+static std::string DotQuery(const char* query, bool* resolved) {
+  *resolved = true;
 	auto expect = [](const char*& str, const char& value, bool& found){
 		if(str == 0) {
 			return std::string("");
@@ -234,14 +235,21 @@ static std::string DotQuery(const char* query) {
 	for(ssize_t i = components.size()-1;i>=0;i--) {
 		Event m;
 		void(*cb)(void*,const char*);
+		bool abort = false;
 		void* thisptr = C([&](const char* name){
 			if(name != 0) {
 				parent = name;
+			}else {
+			  *resolved = false; //error occured during name resolution.
+			  abort = true;
 			}
 			m.signal();
 		},cb);
 		GGDNS_QueryDomain(components[i].data(),parent.data(),thisptr,cb);
 		m.wait();
+		if(abort) {
+		  break;
+		}
 	}
 	return parent;
 }

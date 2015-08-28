@@ -643,7 +643,8 @@ Guid ResolveDotName(const char* dotname, const char* localAuth) {
 	}
 unsigned char glist[1024];
 size_t gsize = 0;
-	std::string auth = DotQuery(dotname);
+bool success_res;
+	std::string auth = DotQuery(dotname,&success_res);
 	void* thisptr;
 	void(*cb)(void*,unsigned char*,size_t);
 	thisptr = C([&](unsigned char* list, size_t bytelen){
