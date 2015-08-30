@@ -61,8 +61,8 @@ static void* C(const F& callback, R(*&fptr)(void*, args...)) {
 extern "C" {
 #endif
     void* OpenNet_OAuthInitialize();
-    void AES_Encrypt(unsigned char* key, unsigned char* data);
-    void AES_Decrypt(unsigned char* key, unsigned char* data);
+    void AES_Encrypt(unsigned char* key, unsigned char* dest, unsigned char* src);
+    void AES_Decrypt(unsigned char* key, unsigned char* dest, unsigned char* src);
     void OpenNet_Retrieve(void* db, const char* name, void* thisptr, void(*callback)(void* thisptr,NamedObject* obj));
     bool OpenNet_AddObject(void* db, const char* name, const NamedObject* obj);
     void OpenNet_OAuthDestroy(void* db);
