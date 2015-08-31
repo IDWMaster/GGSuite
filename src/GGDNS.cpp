@@ -975,7 +975,7 @@ void GGDNS_MakeHost(const char* ptr, unsigned char* guidlist, size_t len) {
 		authority = objPtr->authority;
 	},cb);
 	OpenNet_Retrieve(db,ptr,thisptr,cb);
-//TODO: Finish creation of object, and add to some metadata base
+//TODO: Finish creation of object, and add to some metadatabase
 	obj.authority = (char*)authority.data();
 	unsigned char id[16];
 	char txt[256];

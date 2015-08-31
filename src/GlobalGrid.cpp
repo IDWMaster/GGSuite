@@ -595,6 +595,13 @@ void GlobalGrid_GetID(void* connectionManager, unsigned char* id) {
 	P2PConnectionManager* mngr = (P2PConnectionManager*)connectionManager;
 	memcpy(id, mngr->id, 16);
 }
+void GlobalGrid_SetID(void* connectionManager, const unsigned char* id)
+{
+  P2PConnectionManager* mngr = (P2PConnectionManager*)connectionManager;
+  memcpy(mngr->id,id,16);
+  
+}
+
 void GlobalGrid_RegisterProtocol(void* connectionManager, unsigned char* id,ProtocolDriver driver) {
 	Guid mid;
 	memcpy(&mid.value, id, 16);

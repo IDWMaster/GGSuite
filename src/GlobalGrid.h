@@ -93,6 +93,7 @@ extern "C" {
     void FreePtr(void* libHandle);
     VSocket* GlobalGrid_AllocSocket();
     void GlobalGrid_GetID(void* connectionManager, unsigned char* id);
+    void GlobalGrid_SetID(void* connectionManager, const unsigned char* id);
     void GlobalGrid_RegisterProtocol(void* connectionManager, unsigned char* id,ProtocolDriver driver);
     void GlobalGrid_ntfyPacket(void* connectionManager, VSocket* socket, unsigned char* data, size_t sz);
     void GlobalGrid_OpenPort(void* connectionManager,int32_t portno,ReceiveCallback onReceived);
@@ -213,6 +214,9 @@ public:
 	}
 	~P2PConnectionManager() {
 		FreePtr(nativePtr);
+	}
+	void setID(const unsigned char* input) {
+	  GlobalGrid_SetID(nativePtr,input);
 	}
 	void getID(unsigned char* output) {
 		GlobalGrid_GetID(nativePtr,output);
