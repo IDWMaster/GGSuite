@@ -3,3 +3,5 @@
 * Finish serialization/deserialization logic for the IP protocol driver
 * RunQuery (GGDNS.cpp) should be re-structured to make it more readable.
 * Timeouts don't seem to be working properly (GGDNS). This needs fixing.
+* Make a way for a ProtocolDriver to specify its MTU
+* Make a JumboFrame driver that is capable of sending very large packets over a ProtocolDriver which doesn't support it
