@@ -790,11 +790,12 @@ static void RunQuery(const char* _name, const F& callback) {
         invokeCallback(obj);
     };
     void* thisptr = C(bot,functor);
-    OpenNet_Retrieve(db,name.data(),thisptr,functor); //TODO: Not a deadlock. It's just NOT finding the object for some reason!
+    OpenNet_Retrieve(db,name.data(),thisptr,functor); 
     if(!m) {
-        //Send query
+        //Send query (need update)
         SendQuery(name.data(),invokeCallback);
     }else {
+      //Send raw query (just for update)
     	SendQuery_Raw(name.data());
     }
 }

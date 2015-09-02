@@ -1,0 +1,5 @@
+* TESTING: Run tests on VLANs with same subnet
+* Create API to receive a callback when a new DNS entry is added to the system
+* Finish serialization/deserialization logic for the IP protocol driver
+* RunQuery (GGDNS.cpp) should be re-structured to make it more readable.
+* Timeouts don't seem to be working properly (GGDNS). This needs fixing.
