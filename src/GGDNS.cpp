@@ -189,7 +189,7 @@ public:
     memcpy(query+strlen(name)+1,parent,strlen(parent)+1);
   }
   bool operator<(const DomainInformation other) const {
-    return other.qlen == qlen ? memcmp(query,other,qlen) < 0 : other.qlen<qlen;
+    return other.qlen == qlen ? memcmp(query,other.query,qlen) < 0 : other.qlen<qlen;
   }
   ~DomainInformation() {
     delete[] query;
