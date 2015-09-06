@@ -178,13 +178,62 @@ public:
 };
 
 
+class DomainInformation {
+public:
+  unsigned char* query;
+  size_t qlen;
+  DomainInformation(const char* name, const char* parent) {
+    qlen = strlen(name)+1+strlen(parent)+1;
+    query = new unsigned char[qlen];
+    memcpy(query,name,strlen(name)+1);
+    memcpy(query+strlen(name)+1,parent,strlen(parent)+1);
+  }
+  bool operator<(const DomainInformation other) const {
+    return other.qlen == qlen ? memcmp(query,other,qlen) < 0 : other.qlen<qlen;
+  }
+  ~DomainInformation() {
+    delete[] query;
+  }
+};
 
 static std::mutex callbacks_mtx;
 //Resolver cache; used to map GUIDs to server identifiers
 static std::map<std::string,std::vector<GlobalGrid_Identifier>> resolverCache;
 static std::map<std::string,std::shared_ptr<WaitHandle>> objectRequests;
 static std::map<std::string,std::shared_ptr<WaitHandle>> certRequests;
+static std::map<DomainInformation,std::shared_ptr<WaitHandle>> pendingDNSQueries;
 static std::map<Guid,std::shared_ptr<WaitHandle>> outstandingPings;
+
+
+
+template<typename K,typename T, typename Y>
+static void MapInsert(const K& key,T& value, Y& map) {
+	callbacks_mtx.lock();
+	if(map.find(key) != map.end()) {
+		value = map[key];
+	}else {
+		map[key] = value;
+	}
+	callbacks_mtx.unlock();
+
+}
+//Posts a completion event to the specified map, and removes the pending request from the list of requests
+template<typename K, typename Y>
+static void PostCompletionEvent(const K& key,Y& map, unsigned char* data, size_t len) {
+callbacks_mtx.lock();
+if(map.find(key) != map.end()) {
+    std::shared_ptr<WaitHandle> handle = map[key];
+    if(data) {
+      handle->data = new unsigned char[len];
+      memcpy(handle->data,data,len);
+    }
+    handle->success = true;
+    map.erase(key);
+    handle->evt.signal();
+}
+callbacks_mtx.unlock();
+}
+
 
 static void* connectionmanager;
 static void* db;
@@ -230,14 +279,16 @@ static void processDNS(const char* name) {
 				return;
 			}
 			//WE HAVE DNS!!!!
-			//TODO: Verify signature matches and add to database
+			//Verify signature matches and add to database
 			//If we don't have signatures for parent zone; request them, then
 			//resend this request recursively.
 			if(strlen(parent) == 0) {
 				//We are root; add directly to database.
 				OpenNet_AddDomain(db,dname,0,name);
+				DomainInformation info(dname,0);
+				PostCompletionEvent(info,pendingDNSQueries,0,0);		
 			}else {
-				//TODO: We are NOT root. Load parent node and check signature
+				// We are NOT root. Load parent node and check signature
 
 				std::string parentAuthority;
 				std::string parent_name = parent;
@@ -252,7 +303,10 @@ static void processDNS(const char* name) {
 						void(*t_cb)(void*,const char*,const char*);
 						void* t_a = C([&](const char* a,const char* b){
 							//WE'RE VERIFIED
+						  DomainInformation info(dname,parent);
+						  
 							OpenNet_AddDomain(db,dname,parent,name);
+							PostCompletionEvent(info,pendingDNSQueries,0,0);
 						},t_cb);
 
 						OpenNet_FindReverseDomain(db,parent_name.data(),t_a,t_cb);
@@ -616,18 +670,6 @@ static void processRequest(void* thisptr_, unsigned char* src_, int32_t srcPort,
 //Fast dot name resolution
 static std::map<std::string,Guid> dotnameLookup;
 
-template<typename K,typename T, typename Y>
-static void MapInsert(const K& key,T& value, Y& map) {
-	callbacks_mtx.lock();
-	if(map.find(key) != map.end()) {
-		value = map[key];
-	}else {
-		map[key] = value;
-	}
-	callbacks_mtx.unlock();
-
-}
-
 
 Guid ResolveDotName(const char* dotname, const char* localAuth) {
 	Guid dest;
@@ -904,6 +946,7 @@ void GGDNS_EnumPrivateKeys(void* thisptr,bool(*enumCallback)(void*,const char*))
 }
 void GGDNS_QueryDomain(const char* name, const char* parent, void* tptr, void(*callback)(void*,const char*)) {
 	//OPCODE 4
+  velociraptor:
 	size_t allocsz = 1+strlen(name)+1+strlen(parent)+1;
 	unsigned char* request = (unsigned char*)alloca(allocsz);
 	*request = 4;
@@ -922,6 +965,7 @@ void GGDNS_QueryDomain(const char* name, const char* parent, void* tptr, void(*c
 	}else {
 		//TODO: Send request
 		GlobalGrid_Identifier* list;
+		
 		size_t count = GlobalGrid_GetPeerList(connectionmanager,&list);
 		for(size_t i = 0;i<count;i++) {
 			GlobalGrid_Send(connectionmanager,(unsigned char*)list[i].value,1,1,request,allocsz);
@@ -937,7 +981,13 @@ void GGDNS_QueryDomain(const char* name, const char* parent, void* tptr, void(*c
 		for(size_t i = 0;i<ids.size();i++) {
 			GlobalGrid_Send(connectionmanager,(unsigned char*)ids[i].value,1,1,request,allocsz);
 		}
-		callback(tptr,0);
+		std::shared_ptr<WaitHandle> handle = std::make_shared<WaitHandle>();
+		if(!handle->wait(timeoutValue)) {
+		
+		  callback(tptr,0);
+		}else {
+		  goto velociraptor; //Get eaten by a velociraptor. Just for the fun of it.
+		}
 	}
 }
 void GGDNS_SetTimeoutInterval(size_t ms) {
