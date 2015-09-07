@@ -32,8 +32,8 @@
 
 
 void* insertion_callback_thisptr = 0;
-void(*insertion_callback)(void*,NamedObject*) = 0;
-void GGDNS_SetInsertionHandler(void* thisptr,void(*callback)(void*,NamedObject*)) {
+void(*insertion_callback)(void*,NamedObject*,const char*) = 0;
+void GGDNS_SetInsertionHandler(void* thisptr,void(*callback)(void*,NamedObject*,const char*)) {
   insertion_callback_thisptr = thisptr;
   insertion_callback = callback;
 }
@@ -264,7 +264,7 @@ static void processDNS(const char* name) {
 			memcpy(data.data(),obj->blob+4,data.size());
 			authority = obj->authority;
 			if(insertion_callback) {
-			  insertion_callback(insertion_callback_thisptr,obj);
+			  insertion_callback(insertion_callback_thisptr,obj,name);
 			}
 		}
 	};
