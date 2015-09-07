@@ -59,13 +59,18 @@ public:
 	~InternetSocket() {
 		//printf("IP DEBUG: Socket release\n");
 		std::lock_guard<std::recursive_mutex>(driver->mtx);
-        uint64_t addr = (uint64_t)ntohl(destination.sin_addr.s_addr);
+        uint64_t addr = (uint64_t)(destination.sin_addr.s_addr);
                             uint64_t port = (uint64_t)ntohs(destination.sin_port);
 							uint64_t val = 0;
 							//Fill first 32-bits
 							val = addr;
 							//Fill second 32-bits
 							val |= port<<32;
+							auto sval = driver->socketMappings.find(val);
+							if(sval == driver->socketMappings.end()) {
+							  printf("ERROR destroying IP socket -- Fault code 0x0\n");
+							  throw "sideways";
+							}
 		driver->socketMappings.erase(driver->socketMappings.find(val));
 
 	}
