@@ -29,6 +29,16 @@
 #include <uuid/uuid.h>
 #include <memory>
 
+
+
+void* insertion_callback_thisptr = 0;
+void(*insertion_callback)(void*,NamedObject*) = 0;
+void GGDNS_SetInsertionHandler(void* thisptr,void(*callback)(void*,NamedObject*)) {
+  insertion_callback_thisptr = thisptr;
+  insertion_callback = callback;
+}
+
+
 class CallOnReturn {
 public:
 	std::function<void()> function;
@@ -241,6 +251,7 @@ static void SendQuery_Raw(const char* name);
 template<typename F>
 static void RunQuery(const char* _name, const F& callback);
 static void processDNS(const char* name) {
+  
 	try {
 	//Attempt to insert/update DNS record
 	void(*callback)(void*,NamedObject*);
@@ -252,6 +263,9 @@ static void processDNS(const char* name) {
 			data.resize(obj->bloblen-4);
 			memcpy(data.data(),obj->blob+4,data.size());
 			authority = obj->authority;
+			if(insertion_callback) {
+			  insertion_callback(insertion_callback_thisptr,obj);
+			}
 		}
 	};
 	thisptr = C(bot,callback);

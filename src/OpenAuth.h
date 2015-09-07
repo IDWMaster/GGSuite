@@ -98,6 +98,8 @@ extern "C" {
     void OpenNet_EnumCertificates(void* db, void* thisptr, bool(*callback)(void*,const char*));
     void GGDNS_Backup(void* thisptr,void(*writeDgate)(void*,unsigned char*,size_t));
     void GGDNS_RestoreBackup(unsigned char* bytes, size_t sz);
+    //Sets the insertion handler to be called when a new NamedObject is added to the database.
+    void GGDNS_SetInsertionHandler(void* thisptr,void(*callback)(void*,NamedObject*));
     extern size_t OpenNet_replicaCount;
 #ifdef __cplusplus
 }

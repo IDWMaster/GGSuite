@@ -109,7 +109,6 @@ void Route_Uncapture(void* route);
 void Route_Assign(void* connectionManager,unsigned char* guid, void* route);
 void GlobalGrid_FreezeSocket(void* connectionManager,unsigned char* guid);
 void GlobalGrid_UnfreezeSocket(void* connectionManager, unsigned char* guid);
-
 #ifdef __cplusplus
 }
 
