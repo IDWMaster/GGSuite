@@ -115,7 +115,7 @@ public:
                 struct sockaddr_in addr;
                 memset(&addr,0,sizeof(addr));
                 addr.sin_addr.s_addr = ((uint32_t)val);
-                addr.sin_port = htons((uint32_t)(val >> 32));
+                addr.sin_port = ((uint32_t)(val >> 32));
                 //printf("%i\n",addr.sin_port);
                 addr.sin_family = AF_INET;
                 knownRoutes[i] = addr;
@@ -181,8 +181,8 @@ public:
                 }
                 if(received>0) {
 					//Process packet
-                    uint64_t addr = (uint64_t)ntohl(clientaddr.sin_addr.s_addr);
-                    uint64_t port = (uint64_t)ntohs(clientaddr.sin_port);
+                    uint64_t addr = (uint64_t)(clientaddr.sin_addr.s_addr);
+                    uint64_t port = (uint64_t)(clientaddr.sin_port);
 					uint64_t val = 0;
 					//Fill first 32-bits
                     val = addr;
