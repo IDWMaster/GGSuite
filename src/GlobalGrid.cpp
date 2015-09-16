@@ -172,13 +172,7 @@ public:
 		return ptr;
 	}
 	~IntelligentRoute() {
-		//TODO: This is causing the WHOLE problem, ALSO this is not ABI-safe, because
-        //the VSocket* MAY have been allocated in a different application space, so we
-        //cannot safely de-allocate its memory. It is the responsibility of the
-        //implementor to delete the ptr when Destroy is called.
-		//NOTE: If this is NOT handled properly, it could result in a memory leak
-		//TODO: Solution -- All VSockets should be allocated by the GlobalGrid library
-		//NEVER by the application, using GlobalGrid_AllocSocket
+	  //IMPORTANT NOTE: ALL GlobalGrid sockets MUST be allocated using GlobalGrid_AllocSocket.
 		if (ptr->Destroy != 0) {
 			ptr->Destroy(ptr->thisptr);
 		}

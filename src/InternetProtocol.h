@@ -207,8 +207,6 @@ public:
 
 					std::lock_guard<std::recursive_mutex> l(mtx);
 					if(socketMappings.find(val) == socketMappings.end()) {
-						//printf("IP: Socket alloc MEMORY LEAK\n");
-						//Microsoft Linux! (who would have EVER thought?)
 						::VSocket* ms = GlobalGrid_AllocSocket();
                         InternetSocket* realConnection = new InternetSocket(server,clientaddr,this);
 						ManagedToNativeSocket(ms,realConnection);

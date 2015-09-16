@@ -299,7 +299,7 @@ static void processDNS(const char* name) {
 			if(strlen(parent) == 0) {
 				//We are root; add directly to database.
 				OpenNet_AddDomain(db,dname,0,name);
-				DomainInformation info(dname,0);
+				DomainInformation info(dname,"");
 				PostCompletionEvent(info,pendingDNSQueries,0,0);		
 			}else {
 				// We are NOT root. Load parent node and check signature
