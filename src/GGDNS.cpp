@@ -939,11 +939,12 @@ db = OpenNet_OAuthInitialize();
     onReceived.onReceived = processRequest;
     GlobalGrid_OpenPort(manager,1,onReceived);
     connectionmanager = manager;
-
+GGDNS_SetReplicaCount(1);
+    replicate(); //Perform initial sync.
     RetryOperation([](std::function<void()> completion){
     	replicate();
     },800,-1,[=](){});
-    GGDNS_SetReplicaCount(1);
+    
 }
 
 

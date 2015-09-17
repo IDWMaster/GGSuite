@@ -296,7 +296,7 @@ public:
         sqlite3_prepare(db,sql.data(),(int)sql.size(),&command_addDomainPtr,&parsed);
         sql = "SELECT ServerID FROM Replicas WHERE ObjectName = ?";
         sqlite3_prepare(db,sql.data(),(int)sql.size(),&command_findReplicas,&parsed);
-        sql = "SELECT ObjectName FROM Replicas WHERE ReplicaCount < ?";
+        sql = "SELECT ObjectName FROM Replicas, NamedObjects, PrivateKeys WHERE ReplicaCount < ? AND NamedObjects.Name = Replicas.ObjectName AND PrivateKeys.Thumbprint = NamedObjects.Authority";
         sqlite3_prepare(db,sql.data(),(int)sql.size(),&command_findMissingReplicas,&parsed);
         sql = "SELECT * FROM NamedObjects";
         sqlite3_prepare(db,sql.data(),(int)sql.size(),&command_enumObjects,&parsed);
