@@ -100,6 +100,7 @@ extern "C" {
     void GGDNS_RestoreBackup(unsigned char* bytes, size_t sz);
     //Sets the insertion handler to be called when a new NamedObject is added to the database.
     void GGDNS_SetInsertionHandler(void* thisptr,void(*callback)(void*,NamedObject*,const char*));
+    size_t GGDNS_ObjectsSynchronizing(); //Gets the number of objects currently synchronizing with GGDNS partners.
     extern size_t OpenNet_replicaCount;
 #ifdef __cplusplus
 }

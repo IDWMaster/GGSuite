@@ -869,6 +869,10 @@ static void sendObjectTo(const char* name, unsigned char* dest) {
 
 
 }
+size_t synchronizing;
+size_t GGDNS_ObjectsSynchronizing() {
+  return synchronizing;
+}
 static void replicate() {
 	void* thisptr;
 	bool(*cb)(void*,const char*);
@@ -878,7 +882,7 @@ static void replicate() {
 		return true;
 	},cb);
 	OpenNet_GetMissingReplicas(db,thisptr,cb);
-
+	synchronizing = toBeContinued.size();
 	for(size_t i = 0;i<toBeContinued.size();i++) {
 
 		std::string stackstring = toBeContinued[i];
