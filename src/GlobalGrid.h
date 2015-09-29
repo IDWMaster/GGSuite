@@ -144,12 +144,24 @@ public:
 	}
 };
 
-
+//Forward-declaration for ManagedToNativeSocket
+static void M2NS(void* dest, void* src);
 class VSocket:public IDisposable {
 public:
 	virtual void Send(SafeBuffer& buffer) const = 0;
 	virtual void Serialize(SafeBuffer& output) const = 0;
 	unsigned char protoID[16];
+	::VSocket* ptr;
+	VSocket() {
+	  ptr = 0;
+	}
+	::VSocket* GetPtr() {
+	  if(ptr == 0) {
+	    ptr = GlobalGrid_AllocSocket();
+	    M2NS(ptr,this);
+	  }
+	  return ptr;
+	}
 };
 
 
@@ -186,10 +198,16 @@ static void ManagedToNativeSocket(::VSocket* dest, VSocket* src) {
 
 }
 
+static void M2NS(void* dest, void* src)
+{
+  ManagedToNativeSocket((::VSocket*)dest,(VSocket*)src);
+}
+
+
 static bool ABI_Deserialize(void* thisptr, unsigned char* data, size_t len, ::VSocket* sockptr) {
 	ProtocolDriver* deriver = (ProtocolDriver*)thisptr;
 	VSocket* retval = deriver->Deserialize(SafeBuffer(data,len));
-	ManagedToNativeSocket(sockptr,retval);
+	*sockptr = *retval->GetPtr();
 	if(retval == 0) {
 		return false;
 	}
@@ -227,6 +245,10 @@ public:
 		nativeobj.shutdownHandler = ABI_Shutdown;
 		nativeobj.thisptr = deriver;
 		GlobalGrid_RegisterProtocol(nativePtr,deriver->protoID,nativeobj);
+	}
+	void NotifyPacket(const SafeBuffer& packet, VSocket* ggsock) {
+	  GlobalGrid_ntfyPacket(nativePtr,ggsock->GetPtr(),(unsigned char*)packet.data,packet.len);
+	  
 	}
 };
 

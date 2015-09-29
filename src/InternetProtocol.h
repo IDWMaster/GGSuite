@@ -35,7 +35,7 @@
 namespace GlobalGrid {
 class IPAbstractDriver:public ProtocolDriver {
 public:
-	std::map<uint64_t,::VSocket*> socketMappings;
+	std::map<uint64_t,VSocket*> socketMappings;
 	std::recursive_mutex mtx;
 };
 class InternetSocket:public VSocket {
@@ -96,11 +96,48 @@ public:
 
 	}
 
+	void AddRoute(uint64_t ip, uint64_t portno) {
+	  sockaddr_in sock;
+	  memset(&sock,0,sizeof(sock));
+	  sock.sin_addr.s_addr = (in_addr_t)ip;
+	  sock.sin_family = AF_INET;
+	  sock.sin_port = (in_port_t)portno;
+	  
+	  uint64_t val = ip;
+          val |= portno << 32;
+	  mtx.lock();
+	  if(routers.find(val) == routers.end()) {
+                        //Update routing table
+                        routers[val] = true;
+
+                        knownRoutes.push_back(sock);
+                        fseek(fptr,0,SEEK_SET);
+                        uint32_t count = (uint32_t)knownRoutes.size();
+                        fwrite(&count,1,4,fptr);
+                        fseek(fptr,0,SEEK_END);
+                        fwrite(&val,1,8,fptr);
+                    }
+                    mtx.unlock();
+	}
+	
 	struct sockaddr_in localAddr;
 	struct sockaddr_in broadcastAddr;
 	VSocket* Deserialize(const SafeBuffer& buffer) {
-		//TODO: Implement deserialize
-		return 0;
+	  if(buffer.len != 8) {
+	    return 0;
+	  }
+	  uint64_t m;
+	  memcpy(&m,buffer.data,8);
+	  std::lock_guard<std::recursive_mutex> l(mtx);
+	  if(socketMappings.find(m) == socketMappings.end()) {
+	    sockaddr_in dest;
+	    memset(&dest,0,sizeof(dest));
+	    dest.sin_addr.s_addr = (uint32_t)m;
+	    dest.sin_port = (uint16_t)(m >> 32);
+	    InternetSocket* sock = new InternetSocket(server,dest,this);
+	    socketMappings[m] = sock;
+	  }
+	  return socketMappings[m];
 	}
     FILE* fptr;
 	InternetProtocol(int port, std::shared_ptr<P2PConnectionManager> mngr) {
@@ -193,30 +230,20 @@ public:
                     val = addr;
 					//Fill second 32-bits
                     val |= port << 32;
-                    if(routers.find(val) == routers.end()) {
-                        //Update routing table
-                        routers[val] = true;
-
-                        knownRoutes.push_back(clientaddr);
-                        fseek(fptr,0,SEEK_SET);
-                        uint32_t count = (uint32_t)knownRoutes.size();
-                        fwrite(&count,1,4,fptr);
-                        fseek(fptr,0,SEEK_END);
-                        fwrite(&val,1,8,fptr);
-                    }
+		    AddRoute(addr,port);;
+                    
 
 					std::lock_guard<std::recursive_mutex> l(mtx);
 					if(socketMappings.find(val) == socketMappings.end()) {
-						::VSocket* ms = GlobalGrid_AllocSocket();
-                        InternetSocket* realConnection = new InternetSocket(server,clientaddr,this);
-						ManagedToNativeSocket(ms,realConnection);
+						InternetSocket* realConnection = new InternetSocket(server,clientaddr,this);
 						//Docket mappings update
-						socketMappings[val] = ms;
-						GlobalGrid_ntfyPacket(mngr->nativePtr,ms,buffy,received);
+						socketMappings[val] = realConnection;
+						mngr->NotifyPacket(SafeBuffer(buffy,received),socketMappings[val]);
+						
 
 					}else {
 						//printf("IP: Lookup success (cache hit)\n");
-						GlobalGrid_ntfyPacket(mngr->nativePtr,socketMappings[val],buffy,received);
+						mngr->NotifyPacket(SafeBuffer(buffy,received),socketMappings[val]);
 					}
 				}
 			}
