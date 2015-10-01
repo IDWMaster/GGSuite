@@ -116,6 +116,7 @@ public:
                         fwrite(&count,1,4,fptr);
                         fseek(fptr,0,SEEK_END);
                         fwrite(&val,1,8,fptr);
+			fseek(fptr,0,SEEK_SET);
                     }
                     mtx.unlock();
 	}
@@ -158,7 +159,7 @@ public:
                 memset(&addr,0,sizeof(addr));
                 addr.sin_addr.s_addr = ((uint32_t)val);
                 addr.sin_port = ((uint32_t)(val >> 32));
-                //printf("%i\n",addr.sin_port);
+               // printf("PORT DEBUG: %i\n",htons(addr.sin_port));
                 addr.sin_family = AF_INET;
                 knownRoutes[i] = addr;
                 //TODO: Compress into 64-bit integer
