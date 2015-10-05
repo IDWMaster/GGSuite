@@ -236,7 +236,7 @@ static std::string DotQuery(const char* query, bool* resolved) {
 	}
 	std::string parent;
 	for(ssize_t i = components.size()-1;i>=0;i--) {
-		Event m;
+		LightThread::Event m;
 		void(*cb)(void*,const char*);
 		bool abort = false;
 		void* thisptr = C([&](const char* name){

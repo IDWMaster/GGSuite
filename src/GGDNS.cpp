@@ -29,7 +29,7 @@
 #include <uuid/uuid.h>
 #include <memory>
 
-
+using namespace LightThread;
 
 void* insertion_callback_thisptr = 0;
 void(*insertion_callback)(void*,NamedObject*,const char*) = 0;
@@ -95,7 +95,7 @@ public:
 class WaitHandle {
 public:
 	//The event
-	Event evt;
+	LightThread::Event evt;
 	//Whether or not it was successful
 	bool success;
 	unsigned char* data;

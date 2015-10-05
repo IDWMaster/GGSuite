@@ -536,7 +536,7 @@ static void reliable_recv(void* thisptr, unsigned char* src, int32_t srcPort, un
 			foundSocket->frameID++;
 			auto cb = foundSocket->completionCallback;
 			foundSocket->mtx.unlock();
-			SubmitWork(cb);
+			LightThread::SubmitWork(cb);
 		}else {
 			foundSocket->mtx.unlock();
 		}
